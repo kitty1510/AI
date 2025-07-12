@@ -8,6 +8,10 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import Home from "./pages/Home";
 import LoginForm from "./pages/Login";
 import Auth from "./components/Auth";
+import OAuthSuccess from "./pages/OAuthSuccess";
+import RegisterForm from "./pages/Register";
+import Storage from "./pages/Storage"; // Assuming you have a VideoStorage component
+import Statistic from "./pages/Statistic"; // Assuming you have a VideoStatsPage component
 
 function App() {
   const [showNav, setShowNav] = useState(false);
@@ -32,6 +36,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/storage" element={<Storage />} />
+          <Route path="/statistic" element={<Statistic />} />
           {/* Add more routes as needed */}
         </Routes>
       </div>

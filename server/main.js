@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import routeIndex from "./index.js"; // Đảm bảo path đúng với vị trí thật
+import authRoute from "./routes/auth_google-route.js";
 
 import connectDB from "./config/db.js"; // Nếu bạn có file connectDB
 import { constant } from "./config/env.js";
@@ -11,6 +12,13 @@ const app = express();
 
 // Constants
 const PORT = constant.PORT || 3000;
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; worker-src 'self' blob:;"
+  );
+  next();
+});
 
 // Middleware xử lý body
 app.use(express.json());
@@ -26,6 +34,7 @@ app.use(
 
 // API routes
 app.use("/api", routeIndex);
+app.use("/auth/google", authRoute); // Đảm bảo path đúng với vị trí thật
 
 // Middleware xử lý lỗi chung
 app.use((err, req, res, next) => {

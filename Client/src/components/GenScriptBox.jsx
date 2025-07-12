@@ -1,13 +1,37 @@
-import { FaPhotoVideo } from "react-icons/fa";
-import { FaMagic } from "react-icons/fa";
+import { FaPhotoVideo, FaMagic } from "react-icons/fa";
+import { useState } from "react";
+import { fetchMultipleWikiSummaries } from "../apis/wiki"; // Bạn cần tạo file này nếu chưa có
 
 const GenScriptBox = ({ prompt, setPrompt, getScript, loading }) => {
+  const [wikiResults, setWikiResults] = useState([]);
+  const [wikiLoading, setWikiLoading] = useState(false);
+
   const handleChangePromt = (e) => {
     const { name, value } = e.target;
     setPrompt((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleGetWikiSuggestions = async () => {
+    setWikiLoading(true);
+    try {
+      const data = await fetchMultipleWikiSummaries(prompt.title, 5);
+      setWikiResults(data);
+    } catch (err) {
+      console.error("❌ Lỗi khi lấy gợi ý Wikipedia:", err);
+    } finally {
+      setWikiLoading(false);
+    }
+  };
+
+  const handleSelectSuggestion = (extract) => {
+    setPrompt((prev) => ({
+      ...prev,
+      title: extract,
+    }));
+    setWikiResults([]); // Ẩn danh sách sau khi chọn
   };
 
   return (
@@ -22,11 +46,36 @@ const GenScriptBox = ({ prompt, setPrompt, getScript, loading }) => {
         value={prompt.title}
         onChange={handleChangePromt}
         className="w-full h-32 p-2 bg-gray-800 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 ring-indigo-500"
-        placeholder="Enter your title here..."
+        placeholder="Nhập tiêu đề hoặc ý tưởng..."
       />
-      <label className="text-white text-border font-medium"></label>
 
-      <div className="flex flex-row gap-15 mt-2">
+      <button
+        onClick={handleGetWikiSuggestions}
+        disabled={wikiLoading || !prompt.title}
+        className="self-end px-4 py-1 text-sm bg-indigo-950 hover:bg-indigo-900 text-white rounded-md"
+      >
+        {wikiLoading ? "Đang tìm gợi ý..." : "📚 Gợi ý từ Wikipedia"}
+      </button>
+
+      {/* Button lấy gợi ý */}
+
+      {/* Danh sách gợi ý */}
+      {wikiResults.length > 0 && (
+        <div className="bg-gray-900 border border-gray-700 rounded-md p-3 space-y-2 text-sm text-white max-h-48 overflow-y-auto">
+          {wikiResults.map((item, idx) => (
+            <div
+              key={idx}
+              onClick={() => handleSelectSuggestion(item.extract)}
+              className="cursor-pointer hover:bg-gray-800 p-2 rounded transition"
+            >
+              <strong>{item.title}</strong>: {item.extract.slice(0, 150)}...
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Dropdowns */}
+      <div className="flex flex-row gap-4 mt-2">
         <select
           name="genre"
           value={prompt.genre}
@@ -43,6 +92,7 @@ const GenScriptBox = ({ prompt, setPrompt, getScript, loading }) => {
           <option value="horror">Kinh dị</option>
           <option value="romance">Lãng mạn</option>
         </select>
+
         <select
           name="type"
           value={prompt.type}
@@ -58,14 +108,15 @@ const GenScriptBox = ({ prompt, setPrompt, getScript, loading }) => {
           <option value="fairy tale">Cổ tích</option>
         </select>
       </div>
+
+      {/* Nút Generate */}
       <button
         disabled={loading}
-        className={`rounded-md border h-10 w-32 mt-13 mr-5 self-center text-slate-300 flex items-center justify-center gap-2 transition
-    ${
-      loading
-        ? "bg-slate-700 cursor-not-allowed animate-pulse"
-        : "hover:bg-slate-700"
-    }`}
+        className={`rounded-md border h-10 w-32 mt-4 self-center text-slate-300 flex items-center justify-center gap-2 transition ${
+          loading
+            ? "bg-slate-700 cursor-not-allowed animate-pulse"
+            : "hover:bg-slate-700"
+        }`}
         onClick={getScript}
       >
         {loading ? (

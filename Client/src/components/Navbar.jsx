@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import { FiHome, FiArchive } from "react-icons/fi";
 import { PiCatFill } from "react-icons/pi";
+import { FaChartBar } from "react-icons/fa";
 
 const Navbar = ({ show }) => {
   return (
@@ -21,11 +22,18 @@ const Navbar = ({ show }) => {
             <span className="text-sky-100 ">Create Video</span>
           </Link>
           <Link
-            to="/"
+            to="/storage"
             className="flex items-center gap-2 opacity-40 hover:opacity-100 transition"
           >
             <FiArchive className="inline-block text-sky-100" />
             <span className="text-sky-100 ">Category</span>
+          </Link>
+          <Link
+            to="/statistic"
+            className="flex items-center gap-2 opacity-40 hover:opacity-100 transition"
+          >
+            <FaChartBar className="inline-block text-sky-100" />
+            <span className="text-sky-100 ">Statistic</span>
           </Link>
         </li>
       </ul>

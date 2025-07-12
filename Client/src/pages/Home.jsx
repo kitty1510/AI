@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 
 import GenScriptBox from "../components/GenScriptBox";
-import { fetchScript, fetchVoice } from "../apis";
+import { fetchScript, fetchVoice, fetchVideo } from "../apis";
 import SceneCard from "../components/SceneCard";
 import SceneEdit from "../components/SceneEdit";
 import VideoPlayer from "../components/VideoPlayer";
@@ -29,6 +29,25 @@ const Home = () => {
     setEditingScene(null);
   };
 
+  const updateVoice = async () => {
+    const updatedScript = await Promise.all(
+      script.map(async (scene) => {
+        if (!scene.voice) {
+          console.log("🎤 Đang tạo voice cho:", scene.content);
+          const voice = await fetchVoice({
+            text: scene.content,
+            voice: selectedVoice,
+          });
+          const voiceUrl = voice?.async;
+          console.log("✅ Voice url:", voiceUrl);
+          return { ...scene, voice: voiceUrl };
+        }
+        return scene;
+      })
+    );
+    return updatedScript;
+  };
+
   const handleCreateVideo = async () => {
     console.log("🔴 handleCreateVideo được gọi");
 
@@ -37,32 +56,14 @@ const Home = () => {
       return;
     }
 
-    const allHaveImages = script.every((scene) => scene.img);
-    if (!allHaveImages) {
-      console.error("Một hoặc nhiều scene không có ảnh. Không thể tạo video.");
-      return;
-    }
-
     try {
-      const scenesWithVoice = await Promise.all(
-        script.map(async (scene) => {
-          console.log("🎤 Đang tạo voice cho:", scene.content);
-          const voiceUrl = await fetchVoice({
-            text: scene.content,
-            voice: selectedVoice,
-          });
-          console.log("✅ Voice url:", voiceUrl);
-          return { ...scene, voice: voiceUrl };
-        })
-      );
-
-      const videoUrls = await Promise.all(
-        scenesWithVoice.map((scene) => generateSceneVideo(scene))
-      );
-
-      console.log("🎬 Video URLs:", videoUrls);
+      // Cập nhật voice cho từng scene
+      const updatedScript = await updateVoice();
+      // Tạo video từ kịch bản đã có voice
+      const videoUrl = await fetchVideo(updatedScript);
+      console.log("✅ Video đã tạo:", videoUrl);
     } catch (error) {
-      console.error("Lỗi khi tạo video:", error);
+      console.error("❌ Lỗi khi tạo video:", error);
     }
   };
 
@@ -78,6 +79,9 @@ const Home = () => {
 
   const [loading, setLoading] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState("banmai");
+  const [videoUrl, setVideoUrl] = useState(
+    "https://res.cloudinary.com/drv53xdea/video/upload/v1752311174/generated_videos/mmfx5kglcnuwo8cftqs3.mp4"
+  );
 
   const handleFetchScript = async () => {
     try {
@@ -95,7 +99,7 @@ const Home = () => {
   return (
     <div className="h-full rounded-sm border-2 shadow-2 border-blue bg-gray-800 opacity-80">
       {/* Phần chia 2 bên */}
-      <div className="flex gap-3 px-3 h-96">
+      <div className="flex gap-3 px-3 h-96 mt-5">
         <div className="bg-slate-600 w-1/2 p-4  rounded-lg">
           <GenScriptBox
             prompt={InputPromt}
@@ -183,8 +187,15 @@ const Home = () => {
       {/* Phần dưới */}
       <div
         ref={bottomRef}
-        className="mt-10 bg-gray-700 p-2 text-white rounded-lg mx-3 h-96"
-      ></div>
+        className="mt-10 bg-gradient-to-br from-slate-700 via-slate-900 to-black text-white rounded-lg  h-140 mx-3 "
+      >
+        <VideoPlayer
+          src={videoUrl}
+          title={InputPromt.title} // truyền tiêu đề từ form
+          userId={localStorage.getItem("user_id")} // truyền userId đã lưu
+          description={InputPromt.title} // truyền mô tả từ form
+        />
+      </div>
     </div>
   );
 };

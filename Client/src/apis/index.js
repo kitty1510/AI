@@ -19,3 +19,15 @@ export const fetchVoice = async (voiceInput) => {
   //console.log(response.data);
   return response.data;
 };
+
+export const fetchVideo = async (script) => {
+  const response = await axios.post(`${API_BASE_URL}/video`, script);
+  console.log(response.data);
+  return response.data;
+};
+
+export const fetchListVideo = async (userId) => {
+  const response = await axios.get(`${API_BASE_URL}/video/list/${userId}`);
+  console.log(response.data);
+  return response.data;
+};

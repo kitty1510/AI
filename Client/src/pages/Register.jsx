@@ -1,11 +1,9 @@
 import { useState } from "react";
 import validateLogin from "../utils/LoginValidation";
-import { loginUser } from "../apis/auth"; // Import the login
-import { loginGoogle } from "../sevices/loginGoogle"; // Import the loginGoogle function
 
-import { AiFillGoogleCircle } from "react-icons/ai";
+import { registerUser } from "../apis/auth"; // Import the register function
 
-function LoginForm() {
+function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -21,40 +19,32 @@ function LoginForm() {
       return;
     }
 
-    // Gọi hàm đăng nhập người dùng
-    loginUser({ email, password })
+    // Gọi hàm đăng ký người dùng
+    registerUser({ email, password })
       .then((response) => {
-        const { userId } = response.data; // Giả sử response trả về userId
-        localStorage.setItem("userId", userId); // Lưu userId vào local
-        console.log("Đăng nhập thành công:", response);
-        // Xử lý đăng nhập thành công, ví dụ: chuyển hướng đến trang chính
-        window.location.href = "/"; // Chuyển hướng đến trang chính
+        console.log("Đăng ký thành công:", response);
+        // Xử lý đăng ký thành công, ví dụ: chuyển hướng đến trang đăng nhập
+        window.location.href = "/login"; // Chuyển hướng đến trang đăng nhập
       })
       .catch((error) => {
-        console.error("Lỗi đăng nhập:", error);
+        console.error("Lỗi đăng ký:", error);
         const message =
           error?.response?.data?.message ||
-          "Đăng nhập thất bại. Vui lòng thử lại.";
+          "Đăng ký thất bại. Vui lòng thử lại.";
 
         setErrors({ server: message });
       });
-
     setErrors({});
-
-    // reset animation sau khi xử lý
-    // Xử lý tiếp theo...
-
-    // xử lý tiếp theo...
   };
 
   return (
-    <div className="flex justify-center h-auto pt-20 pb-50">
+    <div className="flex justify-center h-auto pt-20 pb-50 ">
       <form
         onSubmit={handleSubmit}
         className="p-8 rounded-xl shadow-lg w-full max-w-md bg-gray-800"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-sky-100">
-          Login
+          Register
         </h2>
 
         <div className="mb-4">
@@ -105,21 +95,9 @@ function LoginForm() {
             {errors.server}
           </p>
         )}
-
-        {/* Nút đăng nhập bằng Google */}
-        <div className="mt-6">
-          <button
-            type="button"
-            onClick={loginGoogle} // Gọi hàm đăng nhập bằng Google
-            className="flex items-center justify-center w-full bg-none border text-gray-200 font-medium py-2 px-4 rounded-md hover:border-sky-500 hover:text-sky-500 transition duration-200"
-          >
-            <AiFillGoogleCircle className="mr-2 text-xl" />
-            Đăng nhập bằng Google
-          </button>
-        </div>
       </form>
     </div>
   );
 }
 
-export default LoginForm;
+export default RegisterForm;
