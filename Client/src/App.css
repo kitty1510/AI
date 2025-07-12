@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap");
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  background: #0e1a2e;
+}
+
+* {
+  -ms-overflow-style: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+header {
+  padding: 30px;
+  height: 20px;
+}
+
+.sidenav {
+  width: 140px;
+  position: absolute;
+  height: 100%;
+  padding: 0 5px;
+  left: -100%;
+  transition: all 0.3s ease-in-out;
+  z-index: 40;
+}
+
+.sidenav.active {
+  left: 0;
+}
+
+.logo {
+  width: 50px;
+}
+
+ul {
+  padding: 0;
+}
+
+ul li {
+  list-style-type: none;
+}
+
+ul li a {
+  color: #eaecef;
+  text-decoration: none;
+  font-size: 16px;
+  display: block;
+  padding: 15px 0;
+  border-radius: 6px;
+}
+
+ul li a:hover,
+ul li a.active {
+  background: #0e1a2e;
+}
+
+ul li a svg {
+  margin-right: 10px;
+}
+
+.auth-btn {
+  border-radius: 0.25rem; /* tương đương rounded */
+  padding: 0.25rem 1rem; /* py-1 = 0.25rem, px-4 = 1rem */
+  color: #334155; /* text-slate-700 */
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+.auth-btn:hover {
+  color: #67e8f9; /* text-cyan-300 */
+  background-color: #475569; /* bg-slate-600 */
+}
